@@ -24,4 +24,4 @@ const launch: Launch = {
 
 launches.set(launch.flightNumber, launch);
 
-export { launches }
+export const getAllLaunches = () => Array.from(launches.values());

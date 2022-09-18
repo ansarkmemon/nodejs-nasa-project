@@ -40,5 +40,6 @@ const loadPlanets = () => {
     })
 }
 
+const getAllPlanets = () => habitablePlanets;
 
-export { habitablePlanets as planets, loadPlanets };
+export { getAllPlanets, loadPlanets };
