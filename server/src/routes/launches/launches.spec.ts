@@ -1,6 +1,14 @@
 import request from "supertest";
 import { app } from "../../app";
 
+const launchBody = {
+    mission: "Kepler Exploration X",
+    rocket: "Explorer IS1",
+    destination: "Kepler-442 b"
+}
+
+const launchDate = "23 January, 2030";
+
 describe('Test GET /launches', () => {
     test('It should respond with 200 success', async () => {
         const response = await request(app).get('/launches');
@@ -9,12 +17,25 @@ describe('Test GET /launches', () => {
 });
 
 describe('Test POST /launches', () => {
-    test('It should respond with 200 success', () => {
-        const response = 200;
-        expect(response).toBe(200)
+    test('It should respond with 200 success', async () => {
+        const response = await request(app).post('/launches').send({ ...launchBody, launchDate });
+
+        expect(new Date(launchDate).valueOf()).toBe(new Date(response.body.launchDate).valueOf());
+
+        expect(response.statusCode).toBe(201);
+        expect(response.body).toMatchObject(launchBody);
+
     });
 
-    test('It should catch missing required properties', () => { })
+    test('It should catch missing required properties', async () => {
+        const response = await request(app).post('/launches').send(launchBody);
+        expect(response.statusCode).toBe(400);
+        expect(response.body).toMatchObject({ message: "Missing required launch property" });
+    })
 
-    test('It should catch invalid dates', () => { });
+    test('It should catch invalid dates', async () => {
+        const response = await request(app).post('/launches').send({ ...launchBody, launchDate: "Hello" });
+        expect(response.statusCode).toBe(400);
+        expect(response.body).toMatchObject({ message: "Invalid date format" });
+    });
 });
