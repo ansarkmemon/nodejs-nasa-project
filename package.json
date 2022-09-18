@@ -6,7 +6,8 @@
   "scripts": {
     "watch": "npm run server & npm run client",
     "client": "npm start --prefix client",
-    "server": "npm run watch --prefix server"
+    "server": "npm run watch --prefix server",
+    "deploy": "npm run build --prefix client && npm start --prefix server"
   },
   "keywords": [],
   "author": "",
