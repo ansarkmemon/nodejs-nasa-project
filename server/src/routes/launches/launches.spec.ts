@@ -1,5 +1,6 @@
 import request from "supertest";
 import { app } from "../../app";
+import { mongoConnect, mongoDisconnect } from "../../services/mongo";
 
 const launchBody = {
     mission: "Kepler Exploration X",
@@ -9,33 +10,39 @@ const launchBody = {
 
 const launchDate = "23 January, 2030";
 
-describe('Test GET /launches', () => {
-    test('It should respond with 200 success', async () => {
-        const response = await request(app).get('/launches');
-        expect(response.statusCode).toBe(200)
-    })
-});
-
-describe('Test POST /launches', () => {
-    test('It should respond with 200 success', async () => {
-        const response = await request(app).post('/launches').send({ ...launchBody, launchDate });
-
-        expect(new Date(launchDate).valueOf()).toBe(new Date(response.body.launchDate).valueOf());
-
-        expect(response.statusCode).toBe(201);
-        expect(response.body).toMatchObject(launchBody);
-
+describe('Launches API', () => {
+    beforeAll(async () => {
+        await mongoConnect();
     });
 
-    test('It should catch missing required properties', async () => {
-        const response = await request(app).post('/launches').send(launchBody);
-        expect(response.statusCode).toBe(400);
-        expect(response.body).toMatchObject({ message: "Missing required launch property" });
-    })
-
-    test('It should catch invalid dates', async () => {
-        const response = await request(app).post('/launches').send({ ...launchBody, launchDate: "Hello" });
-        expect(response.statusCode).toBe(400);
-        expect(response.body).toMatchObject({ message: "Invalid date format" });
+    describe('Test GET /launches', () => {
+        test('It should respond with 200 success', async () => {
+            const response = await request(app).get('/v1/launches');
+            expect(response.statusCode).toBe(200)
+        })
     });
-});
+
+    describe('Test POST /launches', () => {
+        test('It should respond with 200 success', async () => {
+            const response = await request(app).post('/v1/launches').send({ ...launchBody, launchDate });
+
+            expect(new Date(launchDate).valueOf()).toBe(new Date(response.body.launchDate).valueOf());
+
+            expect(response.statusCode).toBe(201);
+            expect(response.body).toMatchObject(launchBody);
+
+        });
+
+        test('It should catch missing required properties', async () => {
+            const response = await request(app).post('/v1/launches').send(launchBody);
+            expect(response.statusCode).toBe(400);
+            expect(response.body).toMatchObject({ message: "Missing required launch property" });
+        })
+
+        test('It should catch invalid dates', async () => {
+            const response = await request(app).post('/v1/launches').send({ ...launchBody, launchDate: "Hello" });
+            expect(response.statusCode).toBe(400);
+            expect(response.body).toMatchObject({ message: "Invalid date format" });
+        });
+    });
+})
