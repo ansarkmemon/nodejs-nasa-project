@@ -17,7 +17,7 @@ describe('Launches API', () => {
 
     describe('Test GET /launches', () => {
         test('It should respond with 200 success', async () => {
-            const response = await request(app).get('/v1/launches');
+            const response = await request(app).get('/v1/launches?page=1&limit=5');
             expect(response.statusCode).toBe(200)
         })
     });

@@ -1,8 +1,10 @@
 import { Request, Response } from "express";
 import { scheduleNewLaunch, deleteLaunch, getAllLaunches, isLaunchPresent, Launch } from "../../models/launches.model";
+import { getPagination } from "../../services/query";
 
 export const httpGetAllLaunches = async (req: Request, res: Response) => {
-    return res.status(200).json(await getAllLaunches());
+    const { skip, limit } = getPagination(req.query);
+    return res.status(200).json(await getAllLaunches(skip, limit));
 }
 
 export const httpAddNewLaunch = async (req: Request, res: Response) => {
